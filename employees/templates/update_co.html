@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+ 
+<form method="post"> 
+    {% csrf_token %}
+    <label style="font-size: larger;">Employee Name: <b>{{name}}</b></label>
+    <div class="mb-3" style="max-width: 300px;">
+        {{form2.as_table}}  
+        <br> 
+        <div id="addon"> 
+            <label for="time-input">Time Arrived2</label>
+        <input type="time" class="form-control" id="time-input" name="time-input"> 
+        </div>
+    </div> 
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function () {
+    // Hide the time input field initially
+    $('#addon').hide();
+    // Handle the change event of the dropdown
+    $('#type').change(function () {
+      var selectedOption = $(this).val();
+      console.log(selectedOption);
+      // Show the time input field if 'special' option is selected
+      if (selectedOption === '5') {
+        $('#addon').show();
+        $('#id_co_time_arrived').prop('disabled', true);
+      } else {
+        // Hide the time input field for other options
+        $('#addon').hide();
+      }
+    });
+
+
+    // Set the value of the dropdown to 'None' on page load if selected option is '5'
+    var selectedOption = $('#type').val();
+    if (selectedOption === '5') {
+      $('#addon').show();
+      $('#id_co_time_arrived').prop('disabled', true);
+    }
+  });
+</script>
+
+
+
+
+{% endblock %}
+

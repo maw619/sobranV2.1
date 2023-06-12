@@ -1,0 +1,51 @@
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+  <!-- Sidebar - Brand -->
+  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'home' %}">
+    <div class="sidebar-brand-icon">
+      <!--  <i class="fas fa-laugh-wink"></i> -->
+      {% load static %}
+      <img src="{% static 'sobranLogo.png' %}" width="65px" height="50px" />
+    </div>
+    <div class="mx-3">SoBran</div>
+  </a>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider my-0" />
+
+  <!-- Nav Item - Dashboard -->
+  <li class="nav-item">
+    <a class="nav-link" href="{%  url 'admin:index' %}">
+      <i class="fas fa-fw fa-tachometer-alt"></i>
+      <span>Admin Panel</span></a>
+  </li>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider d-none d-md-block" />
+
+  {% include 'form_reports.html' %}
+
+  <!-- Divider -->
+  <hr class="sidebar-divider d-none d-md-block" />
+  {% if user.username == 'admin' %}
+  <li class="nav-item">
+    <a class="nav-link" href="#" data-toggle="modal" data-target="#addTransactionModal">
+      <i class="fas fa-fw fa-table"></i>
+      <span>Add Transaction</span></a>
+  </li>
+  {% else %}
+  {% endif %}
+  <!-- Sidebar Toggler (Sidebar)  data-toggle="modal" data-target="#addTransactionModal"-->
+  <br />
+  <br />
+  <br />
+  <br />
+  <div class="text-center d-none d-md-inline">
+    <button class="rounded-circle border-0" id="sidebarToggle"></button>
+  </div>
+</ul>
+
+ 
+
+
+
+</script>

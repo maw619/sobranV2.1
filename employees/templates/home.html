@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+
+{% block content %}
+ 
+<i class="fa fa-search-plus fa-2x" style="color:#4e73df" data-toggle="modal" data-target="#advancedSearchModal" id="hidden-search-form-icon" aria-hidden="true"> Search</i>
+ <br>
+ 
+<div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">{{date_range_label}}</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        {% if user.username == 'admin' %}
+                                        <table class="table table-bordered table-striped" id="dataTable2" width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Type</th>
+                                                    <th>Date</th>
+                                                    <th>Time Arrived / Left</th>
+                                                    <th>Abs (total: {{ total_time_diff }})</th>
+                                                    <th>edit</th>
+                                                    <th>delete</th>
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+                                                <tr>
+                                                   <th>Name</th>
+                                                    <th>Type</th>
+                                                    <th>Date</th>
+                                                    <th>Time Arrived</th>
+                                                    <th>Abs (total: {{ total_time_diff }})</th>
+                                                    <th>edit</th>
+                                                    <th>delete</th>
+                                                </tr>
+                                                
+                                            </tfoot>
+                                            <tbody>
+
+                                            {% for x in sout %}
+                                            <tr>
+                                                <td><a href="{% url 'view_transaction' x.co_id_key %}" >{{x.co_fk_em_id_key.em_name}}</a> </td>
+                                                <td>{{x.co_fk_type_id_key}}</td>
+                                                <td>{{x.co_date}}</td>  
+                                                {% if x.co_time_arrived == None %}
+                                                <td></td>
+                                                <td>{{x.co_time_dif}}</td>
+                                                {% else %}
+                                                <td>{{x.co_time_arrived}}</td> 
+                                                <td>{{x.co_time_dif}}</td>
+                                                {% endif %} 
+                                                                              
+                                                <td><a href="{% url 'update_so_out' x.co_id_key %}" ><i class="fa fa-pen-alt"></i></a></td>
+                                                
+                                                  <td>
+                                                     <form id="delete-form-{{ x.co_id_key }}" method="POST" action="{% url 'delete_so_out' x.co_id_key %}">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="co_id" value="{{ x.co_id_key }}">
+                                                        <a type="submit" class="delete-btn" style="color:red"><i class="fa fa-trash"></i></a>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        {% else %}
+
+                                        <table class="table table-bordered table-striped" id="dataTable2" width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Type</th>
+                                                    <th>Date</th>
+                                                    <th>Time Arrived / Left</th>
+                                                    <th>Abs (total: {{ total_time_diff }})</th>
+                                                   
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+                                                <tr>
+                                                   <th>Name</th>
+                                                    <th>Type</th>
+                                                    <th>Date</th>
+                                                    <th>Time Arrived</th>
+                                                    <th>Abs (total: {{ total_time_diff }})</th>
+                                                    
+                                                </tr>
+                                                
+                                            </tfoot>
+                                            <tbody>
+
+                                            {% for x in sout %}
+                                            <tr>
+                                                <td><a href="{% url 'view_transaction' x.co_id_key %}" >{{x.co_fk_em_id_key.em_name}}</a> </td>
+                                                <td>{{x.co_fk_type_id_key}}</td>
+                                                <td>{{x.co_date}}</td>  
+                                                {% if x.co_time_arrived == None %}
+                                                <td></td>
+                                                <td>{{x.co_time_dif}}</td>
+                                                {% else %}
+                                                <td>{{x.co_time_arrived}}</td> 
+                                                <td>{{x.co_time_dif}}</td>
+                                                {% endif %} 
+                                                                              
+                                              
+                                            </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                                <script>
+                                $(document).ready(function() {
+                                $('.delete-btn').click(function(event) {
+                                    event.preventDefault(); // Prevent default form submission
+
+                                    var form = $(this).closest('form'); // Get the parent form
+                                    var formId = form.attr('id'); // Get the form ID
+
+                                    $.ajax({
+                                    type: 'POST',
+                                    url: form.attr('action'),
+                                    data: form.serialize(), // Serialize form data
+                                    success: function(response) {
+                                        // Handle successful response
+                                        // For example, you can remove the deleted row from the table
+                                        $('#' + formId).closest('tr').remove();
+                                    },
+                                    error: function(xhr, errmsg, err) {
+                                        // Handle error response
+                                        console.log(xhr.status + ": " + xhr.responseText);
+                                    }
+                                    });
+                                });
+                                });
+                                </script>
+
+
+                                                        <!-- transaction Modal  data-toggle="modal" data-target="#addTransactionModal"-->
+                            <div class="modal fade" id="addTransactionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Add Transaction</h5>
+                                                     
+                                        </div>
+                                         <div class="container">
+                                           {% include 'add_transaction_form.html' %}
+                                         </div> 
+                                         <br><br> 
+                                    </div>
+                                </div>
+                            </div>
+                                            
+                            
+                            
+                            
+                            <!-- advancedSearchModal Modal  data-toggle="modal" data-target="#advancedSearchModal"-->
+                            <div class="modal fade" id="advancedSearchModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title m-auto" id="exampleModalLabel">Search Reports</h5>
+                                                     
+                                        </div>
+                                         <div class="container">
+                                                                       <!-- hidden div-->
+                                            <form action="" id="date_range_form_home" class="p-3">
+                                            <div class="form-group">
+                                            <label for="start2" >Start Date</label>
+                                            <input type="date" id="start2" value="{{date_today}}" name="start_date" class="form-control" />
+                                            </div>
+                                            <div class="form-group">
+                                            <label for="end2" >End Date</label>
+                                            <input type="date" id="end2" name="end_date" id="end_input" class="form-control" />
+                                            </div>
+                                            <div class="form-group">
+                                            <label for="name" >Employee</label>
+                                                <select name="employee_name" id="employee_name" class="form-control">
+                                                    <option value="" disabled selected>Select Employee</option>
+                                                    {% for x in emp %}
+                                                    <option value="{{x.em_name}}">{{x.em_name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="name">Name</label>
+                                                <select name="employee_type" id="employee_type" class="form-control">
+                                                <option value="" disabled selected>Select Type</option>
+                                                {% for x in type %}
+                                                <option value="{{x}}">{{x}}</option>
+                                                {% endfor %}
+                                                </select>
+                                            </div>
+                                               <div class="input-group-text" style="background:#fff; border:0; color:#000">
+                                                    <input type="checkbox" name="check" aria-label="Checkbox for following text input">
+                                                    Show All
+                                               </div>
+                                            <button type="submit" class="btn btn-primary" id="sidebar_submit" name="sidebar_submit">Search</button>
+                                            <a href="{% url 'home' %}" type="submit" class="btn btn-primary">Reset</a>
+                                           
+                                        </form>
+
+
+                                         </div>  
+                                    </div>
+                                </div>
+                            </div>
+                         
+                         
+                         
+                         
+                            <!-- infoModal Modal  data-toggle="modal" data-target="#infoModal"-->
+                            <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title m-auto" id="exampleModalLabel">information</h5>
+                                                     
+                                        </div>
+                                         <div class="container">
+                                         
+                                            <table>
+                                            <tr><td>Name</td>
+                                                <td>Type</td>
+                                                <td>Zone</td>
+                                                
+                                            </tr>
+                                            <tr>
+                                            <td>{{name}}</td>
+                                            <td>{{so_type}}</td>
+                                            <td>{{zone}}</td>
+                                            </tr>
+                                            </table>
+
+                                         </div>  
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+   <!--  auto set dates form start to end form  -->                        
+ 
+{% endblock content %}
